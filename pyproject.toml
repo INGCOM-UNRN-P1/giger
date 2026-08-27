@@ -1,0 +1,27 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "giger"
+version = "0.1.0"
+description = "Generador de grafos de flujo de control (CFG) y mapas de llamadas (Call Graphs) en C"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "typer>=0.9.0",
+    "rich>=13.0.0",
+    "pyyaml>=6.0",
+]
+
+[project.scripts]
+giger = "giger.cli:main"
+
+[project.entry-points."ripley.plugins"]
+callgraph = "giger.ripley_plugin:GigerPlugin"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/giger"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
