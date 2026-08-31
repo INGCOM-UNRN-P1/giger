@@ -354,3 +354,12 @@ Podés encadenar `giger` con otras herramientas del ecosistema en una única lí
 giger callgraph src/ -o grafo.dot && dot -Tpng grafo.dot -o grafo.png
 ````
 
+---
+
+(manual-giger-seccion-plugins)=
+## 9. Extensión, Desarrollo de Plugins y API Python
+
+Para crear tus propias reglas, conectores de evaluación o integrar `giger` programáticamente en pipelines de CI/CD:
+
+- 👉 **Consultá la guía completa:** [Guía de Extensión y Creación de Plugins](plugins.md)
+
