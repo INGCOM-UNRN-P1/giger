@@ -2,6 +2,38 @@
 
 GIGER analiza el código fuente en C para construir el mapa estático de llamadas entre funciones (Call Graph), detectar ciclos recursivos, funciones no invocadas (*dead code*) y exportar diagramas en sintaxis Mermaid.
 
+---
+
+## 🎯 Alcance
+
+### Qué cubre
+- Análisis estático de topología y control de flujo en código fuente C.
+- Extracción y renderizado de mapas de llamadas entre funciones (Call Graphs).
+- Construcción y análisis de grafos de flujo de control (CFG).
+- Cálculo de la métrica de complejidad ciclomática de McCabe por función.
+- Detección de código muerto y funciones huérfanas (no invocadas o inalcanzables).
+- Exportación de diagramas a sintaxis Mermaid y formato DOT de Graphviz.
+
+### Qué no cubre (Límites y Delegación)
+- Medición dinámica de profundidad de pila en funciones recursivas (delegado a `sebastian`).
+- Desensamblado de código máquina ni inspección de jump tables (delegado a `rachel`).
+- Perfilado de tiempos de ejecución o ciclos de clock (delegado a `ferro`).
+
+---
+
+## 📋 Requisitos
+
+### Requisitos de Sistema y Entorno
+- Multiplataforma. Python >= 3.10.
+
+### Dependencias Externas y Binarios
+- `graphviz` (`dot`, opcional para renderizar gráficos vectoriales).
+
+### Integración en el Ecosistema
+- CLI `giger`. Plugin registrado en `ripley.plugins` (`callgraph`).
+
+---
+
 ## Uso Rápido
 
 ```bash
