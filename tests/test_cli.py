@@ -43,3 +43,15 @@ def test_cli_callgraph_mermaid_con_huerfanas(tmp_path):
     assert "graph TD" in res.stdout
     assert "huerfana" in res.stdout
     assert "No invocada" in res.stdout
+
+
+def test_cli_doctor():
+    res = runner.invoke(app, ["doctor"])
+    assert res.exit_code == 0
+    assert "doctor" in res.stdout.lower()
+
+    res_json = runner.invoke(app, ["doctor", "--json"])
+    assert res_json.exit_code == 0
+    data = json.loads(res_json.stdout)
+    assert data["herramienta"] == "giger"
+    assert data["ok"] is True
