@@ -47,7 +47,10 @@ def main_callback(
 
 def generar_seccion_markdown(cg) -> str:
     """Genera sección de mapa de llamadas y código muerto para Dredd."""
-    lines = ["## Grafo de Llamadas y Funciones (Giger)\n"]
+    lines = [
+        "<!-- dredd-section: giger v1.0.0 -->\n",
+        "## Grafo de Llamadas y Funciones (Giger)\n",
+    ]
     lines.append(f"- **Archivo analizado:** `{cg.archivo.name}`")
     lines.append(f"- **Funciones detectadas:** {len(cg.funciones)}")
     lines.append(f"- **Funciones recursivas:** {len(cg.funciones_recursivas)}")
@@ -64,7 +67,9 @@ def generar_seccion_markdown(cg) -> str:
             llamadas_a = [a.destino for a in cg.aristas if a.origen == fn]
             tipo = "Recursiva" if fn in cg.funciones_recursivas else "Huérfana" if fn in cg.funciones_huerfanas else "Normal"
             dest_str = ", ".join(f"`{d}()`" for d in sorted(set(llamadas_a))) if llamadas_a else "—"
-            lines.append(f"| `{fn}()` | {tipo} | {dest_str} |")
+            fn_limpio = fn.replace("|", "&#124;")
+            dest_limpio = dest_str.replace("|", "&#124;")
+            lines.append(f"| `{fn_limpio}()` | {tipo} | {dest_limpio} |")
         lines.append("")
 
     if cg.diagrama_mermaid:

@@ -26,6 +26,7 @@ class CallgraphInfo:
 
     def to_dict(self) -> Dict[str, Any]:
         return {
+            "schema_version": "1.0.0",
             "archivo": str(self.archivo),
             "total_funciones": len(self.funciones),
             "total_llamadas": len(self.aristas),
