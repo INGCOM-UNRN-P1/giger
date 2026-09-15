@@ -32,3 +32,14 @@ def test_cli_callgraph_mermaid(tmp_path):
     res = runner.invoke(app, ["callgraph", str(fuente), "--mermaid"])
     assert res.exit_code == 0
     assert "graph TD" in res.stdout
+
+
+def test_cli_callgraph_mermaid_con_huerfanas(tmp_path):
+    fuente = tmp_path / "dead.c"
+    fuente.write_text("void huerfana() {}\nint main() { return 0; }\n")
+
+    res = runner.invoke(app, ["callgraph", str(fuente), "--mermaid"])
+    assert res.exit_code == 0
+    assert "graph TD" in res.stdout
+    assert "huerfana" in res.stdout
+    assert "No invocada" in res.stdout

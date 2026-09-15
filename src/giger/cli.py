@@ -102,7 +102,8 @@ def callgraph_cmd(
         raise typer.Exit(code=0)
 
     if mermaid_view:
-        console.print(cg.diagrama_mermaid)
+        if cg.diagrama_mermaid:
+            console.print(cg.diagrama_mermaid, markup=False)
         raise typer.Exit(code=0)
 
     tabla = Table(title=f"Mapa de Llamadas en {fuente.name} ({len(cg.funciones)} funciones)")
