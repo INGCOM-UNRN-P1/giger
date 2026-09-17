@@ -7,14 +7,13 @@ GIGER analiza el código fuente en C para construir el mapa estático de llamada
 ## 🎯 Alcance
 
 ### Qué cubre
-- Análisis estático de topología y control de flujo en código fuente C.
+- Análisis estático de la topología de llamadas en código fuente C.
 - Extracción y renderizado de mapas de llamadas entre funciones (Call Graphs).
-- Construcción y análisis de grafos de flujo de control (CFG).
-- Cálculo de la métrica de complejidad ciclomática de McCabe por función.
 - Detección de código muerto y funciones huérfanas (no invocadas o inalcanzables).
-- Exportación de diagramas a sintaxis Mermaid y formato DOT de Graphviz.
+- Exportación de diagramas a sintaxis Mermaid.
 
 ### Qué no cubre (Límites y Delegación)
+- Grafos de flujo de control (CFG) intra-función, complejidad ciclomática de McCabe ni exportación a DOT/Graphviz: no están implementados.
 - Medición dinámica de profundidad de pila en funciones recursivas (delegado a `sebastian`).
 - Desensamblado de código máquina ni inspección de jump tables (delegado a `rachel`).
 - Perfilado de tiempos de ejecución o ciclos de clock (delegado a `ferro`).

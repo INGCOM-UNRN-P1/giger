@@ -9,14 +9,47 @@ from giger.core.models import AristaLlamada, CallgraphInfo
 
 
 def _eliminar_comentarios(texto: str) -> str:
-    def replacer(match):
-        s = match.group(0)
-        if s.startswith("/"):
-            return "".join("\n" if c == "\n" else " " for c in s)
-        return s
+    """Blanquea comentarios y literales preservando offsets y saltos de línea.
 
-    pattern = re.compile(r'//.*?$|/\*.*?\*/', re.DOTALL | re.MULTILINE)
-    return re.sub(pattern, replacer, texto)
+    Los literales importan tanto como los comentarios: sin enmascararlos, una
+    cadena como `"llamar a procesar(x)"` agrega una arista falsa al grafo de
+    llamadas, y el `printf("...")` de cualquier mensaje de ayuda basta para
+    inventar funciones que nadie invoca.
+    """
+    resultado = []
+    i = 0
+    n = len(texto)
+
+    while i < n:
+        c = texto[i]
+        par = texto[i:i + 2]
+
+        if par == "//":
+            fin = texto.find("\n", i)
+            fin = n if fin == -1 else fin
+        elif par == "/*":
+            fin = texto.find("*/", i + 2)
+            fin = n if fin == -1 else fin + 2
+        elif c in ('"', "'"):
+            j = i + 1
+            while j < n:
+                if texto[j] == "\\":
+                    j += 2
+                    continue
+                if texto[j] == c or texto[j] == "\n":
+                    j += 1 if texto[j] == c else 0
+                    break
+                j += 1
+            fin = j
+        else:
+            resultado.append(c)
+            i += 1
+            continue
+
+        resultado.append("".join("\n" if ch == "\n" else " " for ch in texto[i:fin]))
+        i = fin
+
+    return "".join(resultado)
 
 
 def analizar_callgraph_archivo(archivo: Path) -> CallgraphInfo:

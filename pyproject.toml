@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "giger"
 version = "0.1.0"
-description = "Generador de grafos de flujo de control (CFG) y mapas de llamadas (Call Graphs) en C"
+description = "Generador de mapas de llamadas (Call Graphs) y detección de recursión y código muerto en C"
 readme = "README.md"
 license = {text = "GPL-3.0-or-later"}
 authors = [

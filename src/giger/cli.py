@@ -19,7 +19,7 @@ err_console = Console(stderr=True)
 
 app = typer.Typer(
     name="giger",
-    help="🕸️ GIGER — Generador de grafos de flujo de control (CFG) y mapas de llamadas (Call Graphs) en C.",
+    help="🕸️ GIGER — Mapas de llamadas (Call Graphs), ciclos de recursión y detección de funciones huérfanas en C.",
     add_completion=True,
     no_args_is_help=True,
 )
