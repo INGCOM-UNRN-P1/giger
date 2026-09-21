@@ -55,3 +55,20 @@ def test_cli_doctor():
     data = json.loads(res_json.stdout)
     assert data["herramienta"] == "giger"
     assert data["ok"] is True
+
+
+def test_huerfanas_semantica_de_salida_y_texto_del_reporte(tmp_path):
+    """GIGER-D0303 / D0402: el reporte no miente sobre main() y hay salida 1 opt-in."""
+    f = tmp_path / "m.c"
+    f.write_text("void muerta(void) {}\nint main(void) { return 0; }\n")
+    assert runner.invoke(app, ["check", str(f)]).exit_code == 0
+    assert runner.invoke(app, ["check", str(f), "--fail-on-orphans"]).exit_code == 1
+    assert runner.invoke(app, ["check", str(f), "--json", "--fail-on-orphans"]).exit_code == 1
+    md = tmp_path / "r.md"
+    res = runner.invoke(app, ["report", str(f), "-o", str(md)])
+    texto = md.read_text(encoding="utf-8")
+    assert "desde `main()`" not in texto
+    assert "ninguna otra función de este archivo" in texto
+    limpio = tmp_path / "ok.c"
+    limpio.write_text("int main(void) { return 0; }\n")
+    assert runner.invoke(app, ["check", str(limpio), "--fail-on-orphans"]).exit_code == 0

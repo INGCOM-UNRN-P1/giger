@@ -56,7 +56,7 @@ def generar_seccion_markdown(cg) -> str:
     lines.append(f"- **Funciones recursivas:** {len(cg.funciones_recursivas)}")
     lines.append(f"- **Funciones huérfanas / dead code:** {len(cg.funciones_huerfanas)}\n")
     if cg.funciones_huerfanas:
-        lines.append(f"> [!WARNING]\n> **Código Muerto Potencial:** Las funciones {', '.join(f'`{f}()`' for f in cg.funciones_huerfanas)} nunca son invocadas desde `main()`.\n")
+        lines.append(f"> [!WARNING]\n> **Código Muerto Potencial:** Las funciones {', '.join(f'`{f}()`' for f in cg.funciones_huerfanas)} no son invocadas por ninguna otra función de este archivo (análisis intra-archivo).\n")
     else:
         lines.append("> [!TIP]\n> **Estructura Conexa:** Todas las funciones del módulo son alcanzables desde el flujo de ejecución.\n")
 
@@ -87,29 +87,35 @@ def callgraph_cmd(
     mermaid_view: bool = typer.Option(False, "--mermaid", "-m", help="Emitir diagrama en sintaxis Mermaid."),
     json_output: bool = typer.Option(False, "--json", help="Salida en JSON."),
     output_md: Optional[Path] = typer.Option(None, "--md", "--output-md", "-o", help="Generar sección de reporte en formato Markdown para fusión en Dredd."),
+    fail_on_orphans: bool = typer.Option(False, "--fail-on-orphans", help="Salir con código 1 si hay funciones huérfanas (por defecto siempre 0)."),
 ) -> None:
-    """Construye el mapa de llamadas entre funciones y detecta recursión y código muerto."""
+    """Construye el mapa de llamadas entre funciones y detecta recursión y código muerto.
+
+    Códigos de salida: 0 análisis correcto, 2 archivo inexistente y, solo con
+    --fail-on-orphans, 1 si hay funciones huérfanas.
+    """
     if not fuente.is_file():
         err_console.print(f"[red]Error:[/red] No se encontró el archivo '{fuente}'.")
         raise typer.Exit(code=2)
 
     cg = analizar_callgraph_archivo(fuente)
+    codigo = 1 if fail_on_orphans and cg.funciones_huerfanas else 0
 
     if output_md:
         md_text = generar_seccion_markdown(cg)
         output_md.parent.mkdir(parents=True, exist_ok=True)
         output_md.write_text(md_text, encoding="utf-8")
         console.print(f"[green]✓ Sección Markdown generada en:[/green] [cyan]{output_md}[/cyan]")
-        raise typer.Exit(code=0)
+        raise typer.Exit(code=codigo)
 
     if json_output:
         print(json.dumps(cg.to_dict(), indent=2, ensure_ascii=False))
-        raise typer.Exit(code=0)
+        raise typer.Exit(code=codigo)
 
     if mermaid_view:
         if cg.diagrama_mermaid:
             console.print(cg.diagrama_mermaid, markup=False)
-        raise typer.Exit(code=0)
+        raise typer.Exit(code=codigo)
 
     tabla = Table(title=f"Mapa de Llamadas en {fuente.name} ({len(cg.funciones)} funciones)")
     tabla.add_column("Función", style="bold cyan")
@@ -128,6 +134,8 @@ def callgraph_cmd(
         console.print(f"[magenta]• Funciones recursivas:[/magenta] {', '.join(cg.funciones_recursivas)}")
     if cg.funciones_huerfanas:
         console.print(f"[yellow]• Funciones no invocadas (candidatas a dead code):[/yellow] {', '.join(cg.funciones_huerfanas)}")
+    if codigo:
+        raise typer.Exit(code=codigo)
 
 
 @app.command("report")
