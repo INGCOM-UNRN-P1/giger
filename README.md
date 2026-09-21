@@ -9,7 +9,7 @@ GIGER analiza el código fuente en C para construir el mapa estático de llamada
 ### Qué cubre
 - Análisis estático de la topología de llamadas en código fuente C.
 - Extracción y renderizado de mapas de llamadas entre funciones (Call Graphs).
-- Detección de código muerto y funciones huérfanas (no invocadas o inalcanzables).
+- Detección de código muerto: una función es *huérfana* si ninguna otra función **del mismo archivo** la invoca (excepto `main`). El análisis es intra-archivo: una función definida en un `.c` y usada desde otro se reporta como huérfana. Con `--fail-on-orphans` el comando sale con código 1 si hay huérfanas (por defecto siempre 0).
 - Exportación de diagramas a sintaxis Mermaid.
 
 ### Qué no cubre (Límites y Delegación)
