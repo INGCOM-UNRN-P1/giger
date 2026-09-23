@@ -47,8 +47,9 @@ def main_callback(
 
 def generar_seccion_markdown(cg) -> str:
     """Genera sección de mapa de llamadas y código muerto para Dredd."""
+    status = "fail" if cg.funciones_huerfanas else "ok"
     lines = [
-        "<!-- dredd-section: giger v1.0.0 -->\n",
+        f"<!-- dredd-section: giger, tool=giger, version=1.0.0, status={status} -->\n",
         "## Grafo de Llamadas y Funciones (Giger)\n",
     ]
     lines.append(f"- **Archivo analizado:** `{cg.archivo.name}`")
