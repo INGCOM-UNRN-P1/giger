@@ -18,6 +18,7 @@ console = Console()
 err_console = Console(stderr=True)
 
 app = typer.Typer(
+    context_settings={"help_option_names": ["-h", "--help"]},
     name="giger",
     help="🕸️ GIGER — Mapas de llamadas (Call Graphs), ciclos de recursión y detección de funciones huérfanas en C.",
     add_completion=True,
