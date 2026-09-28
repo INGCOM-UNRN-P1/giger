@@ -5,6 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any, Dict, List
 
+from giger import __version__
 from giger.core.graph import analizar_callgraph_archivo
 
 
@@ -12,7 +13,7 @@ class GigerPlugin:
     """Plugin de generación de callgraphs y detección de funciones muertas para Ripley."""
 
     name = "callgraph"
-    version = "0.1.0"
+    version = __version__
 
     def is_available(self) -> bool:
         return True
