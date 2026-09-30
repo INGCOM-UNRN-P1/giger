@@ -47,3 +47,23 @@ giger callgraph main.c --mermaid
 # 3. Salida estructurada JSON
 giger callgraph main.c --json
 ```
+
+<!-- p1:referencia:inicio — generado por p1-tools/scripts/readme_generado.py: no editar a mano -->
+
+## Referencia rápida
+
+### Requisitos
+
+- Python ≥ 3.11 y [uv](https://docs.astral.sh/uv/getting-started/installation/).
+
+### Comandos
+
+| Comando | Descripción |
+|:--|:--|
+| `giger check`, `giger callgraph` | Construye el mapa de llamadas entre funciones y detecta recursión y código muerto. |
+| `giger report` | Genera directamente la sección de reporte Markdown de GIGER para Dredd. |
+| `giger doctor` | Verifica el estado del entorno de análisis de grafos de llamadas GIGER (Python, GCC, cflow). |
+
+Ayuda de cada comando: `giger <comando> -h`.
+
+<!-- p1:referencia:fin -->
