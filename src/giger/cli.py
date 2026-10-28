@@ -122,6 +122,55 @@ def callgraph_cmd(
         raise typer.Exit(code=codigo)
 
 
+@app.command("cfg")
+def cfg_cmd(
+    fuente: Path = typer.Argument(..., exists=True, dir_okay=False, help="Archivo C a analizar."),
+    formato: str = typer.Option("mermaid", "--formato", "-f", help="mermaid (el grafo), texto (sólo los hallazgos) o json."),
+    funcion: Optional[str] = typer.Option(None, "--funcion", help="Sólo esta función."),
+    salida: Optional[Path] = typer.Option(None, "--output", "-o", help="Archivo donde escribir el grafo."),
+) -> None:
+    """Grafo de flujo de control de cada función: bloques básicos, código inalcanzable y bucles infinitos.
+
+    En el grafo Mermaid el código inalcanzable va en rojo punteado y la condición de un bucle infinito en
+    naranja. Sale con 1 si hay un bucle que no termina nunca (las advertencias no cambian el código).
+    """
+    from giger.core.cfg import cfg_de_archivo, mermaid
+
+    if formato not in ("mermaid", "texto", "json"):
+        err_console.print(f"[red]Error:[/red] formato «{formato}» desconocido: usá mermaid, texto o json.")
+        raise typer.Exit(code=2)
+    funciones = [f for f in cfg_de_archivo(fuente) if funcion is None or f.nombre == funcion]
+    if funcion is not None and not funciones:
+        err_console.print(f"[red]Error:[/red] no hay una función {funcion}() en {fuente.name}.")
+        raise typer.Exit(code=2)
+    hallazgos = [h for f in funciones for h in f.hallazgos]
+    if formato == "json":
+        texto = json.dumps({
+            "schema_version": "1.0.0",
+            "archivo": str(fuente),
+            "funciones": [{"nombre": f.nombre, "linea": f.linea, "bloques": len([b for b in f.bloques if b.sentencias]),
+                           "inalcanzables": len([b for b in f.bloques if b.id not in f.alcanzables and b.sentencias])}
+                          for f in funciones],
+            "hallazgos": [vars(h) for h in hallazgos],
+            "diagrama_mermaid": mermaid(funciones),
+        }, indent=2, ensure_ascii=False) + "\n"
+    elif formato == "mermaid":
+        texto = mermaid(funciones)
+    else:
+        texto = "".join(f"{fuente.name}:{h.linea}: {h.codigo} ({h.severidad}) {h.mensaje}\n    ↳ {h.sugerencia}\n"
+                        for h in hallazgos) or f"{fuente.name}: sin código inalcanzable ni bucles infinitos.\n"
+    if salida:
+        salida.parent.mkdir(parents=True, exist_ok=True)
+        salida.write_text(texto, encoding="utf-8")
+        console.print(f"[green]✓ CFG ({formato}) en:[/green] [cyan]{salida}[/cyan]")
+    else:
+        print(texto, end="")
+    if formato == "mermaid":
+        for h in hallazgos:
+            err_console.print(f"{fuente.name}:{h.linea}: {h.codigo} {h.mensaje}")
+    raise typer.Exit(code=1 if any(h.severidad == "error" for h in hallazgos) else 0)
+
+
 @app.command("report")
 def report_cmd(
     fuente: Path = typer.Argument(..., help="Archivo C a analizar."),
