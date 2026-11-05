@@ -73,7 +73,7 @@ giger cfg main.c -f texto        # sólo los hallazgos
 | Comando | Descripción |
 |:--|:--|
 | `giger check`, `giger callgraph` | Construye el mapa de llamadas entre funciones y detecta recursión y código muerto. |
-| `giger cfg` | Grafo de flujo de control de cada función: bloques básicos, código inalcanzable y bucles infinitos. |
+| `giger cfg` | Grafo de flujo de control de cada función: bloques básicos, código inalcanzable y lazos infinitos. |
 | `giger report` | Genera directamente la sección de reporte Markdown de GIGER para Dredd. |
 | `giger doctor` | Verifica el estado del entorno de análisis de grafos de llamadas GIGER (Python, GCC, cflow). |
 

@@ -129,10 +129,10 @@ def cfg_cmd(
     funcion: Optional[str] = typer.Option(None, "--funcion", help="Sólo esta función."),
     salida: Optional[Path] = typer.Option(None, "--output", "-o", help="Archivo donde escribir el grafo."),
 ) -> None:
-    """Grafo de flujo de control de cada función: bloques básicos, código inalcanzable y bucles infinitos.
+    """Grafo de flujo de control de cada función: bloques básicos, código inalcanzable y lazos infinitos.
 
-    En el grafo Mermaid el código inalcanzable va en rojo punteado y la condición de un bucle infinito en
-    naranja. Sale con 1 si hay un bucle que no termina nunca (las advertencias no cambian el código).
+    En el grafo Mermaid el código inalcanzable va en rojo punteado y la condición de un lazo infinito en
+    naranja. Sale con 1 si hay un lazo que no termina nunca (las advertencias no cambian el código).
     """
     from giger.core.cfg import cfg_de_archivo, mermaid
 
@@ -158,7 +158,7 @@ def cfg_cmd(
         texto = mermaid(funciones)
     else:
         texto = "".join(f"{fuente.name}:{h.linea}: {h.codigo} ({h.severidad}) {h.mensaje}\n    ↳ {h.sugerencia}\n"
-                        for h in hallazgos) or f"{fuente.name}: sin código inalcanzable ni bucles infinitos.\n"
+                        for h in hallazgos) or f"{fuente.name}: sin código inalcanzable ni lazos infinitos.\n"
     if salida:
         salida.parent.mkdir(parents=True, exist_ok=True)
         salida.write_text(texto, encoding="utf-8")
